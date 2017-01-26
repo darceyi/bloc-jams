@@ -14,4 +14,14 @@ var animatePoints = function(){
 	}
 };
 
+ // Put any code that is dependent on a completely-loaded web page in a window.onload block, 
+ // particularly any code that depends on DOM elements to execute properly.
+
+window.onload = function(){
+	window.addEventListener("scroll", function(event){
+		console.log(event);
+	});
+};
+
+
 animatePoints();
