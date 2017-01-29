@@ -8,10 +8,20 @@
 // block and confirm that the selling points still animate properly.
 
 // non callback way:
-var fruits = ["grape", "apple", "orange"];
-
-function forEach() {
- 	for(var i = 0; i < fruits.length; i++) {
- 		console.log(i);
+var forEach = function(points) {
+ 	for(var i = 0; i < points.length; i++) {
+ 		return i;
  	}
-}
+};
+
+var getItemsInPoints = function(points, forEach) {
+  return forEach(points);
+};
+
+
+
+// function forEach(points, callback) {
+//  	for(var i = 0; i < points.length; i++) {
+//  		callback(i);
+//  	}
+// }
