@@ -31,7 +31,7 @@ var albumMarconi = {
 var albumDerp = {
 	title: 'Derpee Derp Derp',
 	artist: 'The Derps',
-	label: 'Death Row Records',
+	label: 'Derp Records',
 	year: '2017',
 	albumArtUrl: 'assets/images/album_covers/15.png',
 	songs: [
@@ -72,14 +72,27 @@ var setCurrentAlbum = function(album) {
 	for(var i = 0; i < album.songs.length; i++){
 		albumSongList.innerHTML += createSongRow(i + 1, album.songs[i].title, album.songs[i].duration);
 	}
+
 };
 
 window.onload = function() {
 	setCurrentAlbum(albumPicasso);
+
+	var toggleCovers = document.getElementsByClassName('album-cover-art')[0];
+	
+	toggleCovers.addEventListener('click', function(){
+		console.log('clicked');
+		setCurrentAlbum(albumDerp);
+	});
 }
 
+// var toggleAlbums = function(album1,album2,album3) {
 
-//add an eventlistener to toggle album info when clicked
-// var toggleAlbums = function(album) {
-// 	var
+// 	var toggleCovers = document.getElementsByClassName('album-cover-art')[0];
+	
+// 	toggleCovers.addEventListener('click', function(){
+// 		console.log('clicked');
+// 		setCurrentAlbum(albumDerp);
+// 	});
 // }
+
