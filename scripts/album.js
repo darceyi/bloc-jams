@@ -28,6 +28,21 @@ var albumMarconi = {
 	]
 };
 
+var albumDerp = {
+	title: 'Derpee Derp Derp',
+	artist: 'The Derps',
+	label: 'Death Row Records',
+	year: '2017',
+	albumArtUrl: 'assets/images/album_covers/15.png',
+	songs: [
+		{ title: 'Derp Rhymes with Burp', duration: '0:40' },
+		{ title: 'Derp Twerp', duration: '0:59' },
+		{ title: 'Fantastic Derp', duration: '0:31' },
+		{ title: 'Derp Is a Carrot', duration: '0:34' },
+		{ title: 'Wrong Derp', duration: '0:55' },
+	]
+};
+
 var createSongRow = function(songNumber, songName, songLength) {
 	var template =
 		'<tr class = "album-view-song-item">'
@@ -62,3 +77,9 @@ var setCurrentAlbum = function(album) {
 window.onload = function() {
 	setCurrentAlbum(albumPicasso);
 }
+
+
+//add an eventlistener to toggle album info when clicked
+// var toggleAlbums = function(album) {
+// 	var
+// }
