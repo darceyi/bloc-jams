@@ -84,7 +84,6 @@ window.onload = function() {
 	var toggleCovers = document.getElementsByClassName('album-cover-art')[0];
 	
 	toggleCovers.addEventListener('click', function(){
-		console.log('clicked');
 		setCurrentAlbum(albums[index]);
 		index++;
 		if(index === albums.length){
