@@ -51,7 +51,6 @@ var createSongRow = function(songNumber, songName, songLength) {
 	+	'	<td class="song-item-duration">' + songLength + '</td>'
 	+	'</tr>'
 	;
-
 	return template;
 };
 
@@ -152,7 +151,6 @@ window.onload = function() {
 
 	for(var i = 0; i < songRows.length; i++) {
 		songRows[i].addEventListener('mouseleave', function(event) { //song rows are each <tr> with class album-view-song-item
-			//
 			var songItem = getSongItem(event.target);
 			var songItemNumber = songItem.getAttribute('data-song-number');
 			if(songItemNumber !== currentlyPlayingSong) {
