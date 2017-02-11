@@ -1,4 +1,5 @@
-var collectionItemTemplate = 
+var buildCollectionItemTemplate = function() {
+	var template = 
 	'<div class="collection-album-container column fourth">'
 	+'	<img src="assets/images/album_covers/01.png"/>'
 	+'	<div class="collection-album-info caption">'
@@ -13,14 +14,19 @@ var collectionItemTemplate =
 	+'	</div>'
 	+'</div>'
 	;
-
-window.onload = function() {
-
-	var collectionContainer = document.getElementsByClassName('album-covers')[0];
-
-	collectionContainer.innerHTML = '';
-
-	for(var i = 0; i < 12; i++) {
-		collectionContainer.innerHTML += collectionItemTemplate;
-	}
+	return $(template);
 };
+
+$(window).load(function() {
+//When the element selection becomes a jQuery object, we prefix the  
+//collectionContainer variable name with a $, a convention that identifies 
+//jQuery-related variables.
+	var $collectionContainer = $('.album-covers');
+
+	$collectionContainer.empty();
+	
+	for(var i = 0; i < 12; i++) {
+		var $newThumbnail = buildCollectionItemTemplate();
+		$collectionContainer.append($newThumbnail);
+	}
+});
