@@ -54,12 +54,65 @@ var createSongRow = function(songNumber, songName, songLength) {
 
 	var $row = $(template);
 
+	var clickHandler = function() {
+
+		var songItemNumber = $(this).attr('data-song-number');
+
+		if (currentlyPlayingSong !== null) {
+			// Revert to song number for currently playing song because user started playing new song.
+			var currentlyPlayingSongElement = $('.song-item-number[data-song-number="' + currentlyPlayingSong + '"]');
+			currentlyPlayingSongElement.html(currentlyPlayingSong);
+		}
+		if (currentlyPlayingSong !== songItemNumber) {
+			// Switch from Play -> Pause button to indicate new song is playing.
+			$(this).html(pauseButtonTemplate);
+			currentlyPlayingSong = songItemNumber;
+		} else if (currentlyPlayingSong === songItemNumber) {
+			// Switch from Pause -> Play button to pause currently playing song.
+			$(this).html(playButtonTemplate);
+			currentlyPlayingSong = null;
+		}
+	};
+
+
+//Attempt to write the onHover and offHover functions. hover()
+//Note that we no longer need to use the getSongItem() helper because we can use jQuery's find() method to 
+//get the element with .song-item-number. Use this to refer to the row.
+
+
+// var offHover = function() {
+
+// 		var songItem = $(this).find('.song-item-number');
+// 		var songItemNumber = songItem.attr('data-song-number');
+// 		if (songItemNumber !== currentlyPlayingSong) {
+// 				songItem.html(songItemNumber);
+// 		}
+// };
+// };
+	var onHover = function() {
+		
+		var songItem = $(this).find('.song-item-number');
+		if (songItem.attr('data-song-number') !== currentlyPlayingSong) {
+               songItem.html(playButtonTemplate);
+     	}
+	};
+
+    var offHover = function(event) {
+        var songNumberCell = $(this).find('.song-item-number');
+        var songNumber = songNumberCell.attr('data-song-number');
+
+        if (songNumber !== currentlyPlayingSong) {
+            songNumberCell.html(songNumber);
+        }
+    };
+
 	//find the element with the .song-item-number class that's contained in whichever row is clicked
 	$row.find('.song-item-number').click(clickHandler);
 	//The hover() event listener at #2 combines the mouseover and mouseleave functions. 
 	//The first argument is a callback that executes when the user mouses over the $row element 
 	//and the second is a callback executed when the mouse leaves $row.
 	$row.hover(onHover, offHover);
+
 	return $row;
 };
 
@@ -91,10 +144,6 @@ var setCurrentAlbum = function(album) {
 	}
 };
 
-// Elements we'll be adding listeners to
-var $songListContainer = $('.album-view-song-list');
-var $songRows = $('.album-view-song-item');
-
 // Album button templates
 var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
 var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause"></span></a>';
@@ -103,67 +152,8 @@ var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause">
 var currentlyPlayingSong = null;
 
 $(document).ready(function() {
+	
 	setCurrentAlbum(albumPicasso);
-
-	var findParentByClassName = function(element, targetClass) {
-		if (element.parentElement === null){
-			console.log('No parent found');
-		} else if (element) {
-			var currentParent = element.parentElement;
-			while (currentParent.className != targetClass && currentParent.className !== null) {
-				currentParent = currentParent.parentElement;
-			}
-			return currentParent;
-		} else {
-			console.log('No parent found with that class name');
-		}
-	};
-
-    var clickHandler = function(targetElement){
-      	var songItem = getSongItem(targetElement);
-      	if (currentlyPlayingSong === null) {
-        	songItem.innerHTML = pauseButtonTemplate;
-        	currentlyPlayingSong = songItem.getAttribute('data-song-number');
-     	} else if (currentlyPlayingSong === songItem.getAttribute('data-song-number')) {
-        	songItem.innerHTML = playButtonTemplate;
-        	currentlyPlayingSong = null;
-        } else if (currentlyPlayingSong !== songItem.getAttribute('data-song-number')) {
-        	var currentlyPlayingSongElement = document.querySelector('[data-song-number="' + currentlyPlayingSong + '"]');
-        	currentlyPlayingSongElement.innerHTML = currentlyPlayingSongElement.getAttribute('data-song-number');
-        	songItem.innerHTML = pauseButtonTemplate;
-        	currentlyPlayingSong = songItem.getAttribute('data-song-number');
-   		}
-    };
-
-//Attempt to write the onHover and offHover functions. hover()
-//Note that we no longer need to use the getSongItem() helper because we can use jQuery's find() method to 
-//get the element with .song-item-number. Use this to refer to the row.
-	var onHover = function() {
-		$songListContainer.addEventListener('mouseover', function(event) {
-		if (event.target.parentElement.className === 'album-view-song-item') {
-			var songItem = getSongItem(event.target);
-			if (songItem.getAttribute('data-song-number') !== currentlyPlayingSong) {
-                songItem.innerHTML = playButtonTemplate;
-          	}
-		} 
-	};
-
-	var offHover = function() {
-
-		for (var i = 0; i < songRows.length; i++) {
-			songRows[i].addEventListener('mouseleave', function(event) {
-				var songItem = getSongItem(event.target);
-				var songItemNumber = songItem.getAttribute('data-song-number');
-				if (songItemNumber !== currentlyPlayingSong) {
-					songItem.innerHTML = songItemNumber;
-				}
-			});
-
-			songRows[i].addEventListener('click', function(event) {
-				clickHandler(event.target);
-			});
-		}
-	};
 
 	var albums = [albumPicasso, albumDerp, albumMarconi];
 
