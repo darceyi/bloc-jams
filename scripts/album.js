@@ -1,48 +1,3 @@
-var albumPicasso = {
-	title: 'The Colors',
-	artist: 'Pablo Picasso',
-	label: 'Cubism',
-	year: '1881',
-	albumArtUrl: 'assets/images/album_covers/01.png',
-	songs: [
-		{ title: 'Blue', duration: '4:26' },
-		{ title: 'Green', duration: '3:14' },
-		{ title: 'Red', duration: '5:01' },
-		{ title: 'Pink', duration: '3:21' },
-		{ title: 'Magenta', duration: '2:15' },
-	]
-};
-
-var albumMarconi = {
-	title: 'The Telephone',
-	artist: 'Guglielmo Marconi',
-	label: 'EM',
-	year: '1909',
-	albumArtUrl: 'assets/images/album_covers/20.png',
-	songs: [
-		{ title: 'Hello, Operator?', duration: '1:01' },
-		{ title: 'Ring, ring, ring', duration: '5:01' },
-		{ title: 'Fits in your pocket', duration: '3:21' },
-		{ title: 'Can you hear me now?', duration: '3:14' },
-		{ title: 'Wrong phone number', duration: '2:15' },
-	]
-};
-
-var albumDerp = {
-	title: 'Derpee Derp Derp',
-	artist: 'The Derps',
-	label: 'Derp Records',
-	year: '2017',
-	albumArtUrl: 'assets/images/album_covers/15.png',
-	songs: [
-		{ title: 'Derp Rhymes with Burp', duration: '0:40' },
-		{ title: 'Derp Twerp', duration: '0:59' },
-		{ title: 'Fantastic Derp', duration: '0:31' },
-		{ title: 'Derp Is a Carrot', duration: '0:34' },
-		{ title: 'Wrong Derp', duration: '0:55' },
-	]
-};
-
 var createSongRow = function(songNumber, songName, songLength) {
 	var template =
 		'<tr class = "album-view-song-item">'
@@ -58,19 +13,19 @@ var createSongRow = function(songNumber, songName, songLength) {
 
 		var songItemNumber = $(this).attr('data-song-number');
 
-		if (currentlyPlayingSong !== null) {
+		if (currentlyPlayingSongNumber !== null) {
 			// Revert to song number for currently playing song because user started playing new song.
-			var currentlyPlayingSongElement = $('.song-item-number[data-song-number="' + currentlyPlayingSong + '"]');
-			currentlyPlayingSongElement.html(currentlyPlayingSong);
+			var currentlyPlayingSongElement = $('.song-item-number[data-song-number="' + currentlyPlayingSongNumber + '"]');
+			currentlyPlayingSongElement.html(currentlyPlayingSongNumber);
 		}
-		if (currentlyPlayingSong !== songItemNumber) {
+		if (currentlyPlayingSongNumber !== songItemNumber) {
 			// Switch from Play -> Pause button to indicate new song is playing.
 			$(this).html(pauseButtonTemplate);
-			currentlyPlayingSong = songItemNumber;
-		} else if (currentlyPlayingSong === songItemNumber) {
+			currentlyPlayingSongNumber = songItemNumber;
+		} else if (currentlyPlayingSongNumber === songItemNumber) {
 			// Switch from Pause -> Play button to pause currently playing song.
 			$(this).html(playButtonTemplate);
-			currentlyPlayingSong = null;
+			currentlyPlayingSongNumber = null;
 		}
 	};
 
@@ -92,7 +47,7 @@ var createSongRow = function(songNumber, songName, songLength) {
 	var onHover = function() {
 		
 		var songItem = $(this).find('.song-item-number');
-		if (songItem.attr('data-song-number') !== currentlyPlayingSong) {
+		if (songItem.attr('data-song-number') !== currentlyPlayingSongNumber) {
                songItem.html(playButtonTemplate);
      	}
 	};
@@ -101,7 +56,7 @@ var createSongRow = function(songNumber, songName, songLength) {
         var songNumberCell = $(this).find('.song-item-number');
         var songNumber = songNumberCell.attr('data-song-number');
 
-        if (songNumber !== currentlyPlayingSong) {
+        if (songNumber !== currentlyPlayingSongNumber) {
             songNumberCell.html(songNumber);
         }
     };
@@ -117,6 +72,8 @@ var createSongRow = function(songNumber, songName, songLength) {
 };
 
 var setCurrentAlbum = function(album) {
+
+	currentAlbum = album;
 
  	// Select elements that we want to populate with text dynamically
 	var $albumTitle = $('.album-view-title');
@@ -148,8 +105,12 @@ var setCurrentAlbum = function(album) {
 var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
 var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause"></span></a>';
 
-// Store state of playing songs
-var currentlyPlayingSong = null;
+// Store state of songs and albums
+var currentlyPlayingSongNumber = null;
+var currentAlbum = null;
+//Will hold the currently playing song object from the songs array
+var currentSongFromAlbum  = null;
+
 
 $(document).ready(function() {
 	
