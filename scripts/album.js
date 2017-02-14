@@ -22,6 +22,7 @@ var createSongRow = function(songNumber, songName, songLength) {
 			// Switch from Play -> Pause button to indicate new song is playing.
 			$(this).html(pauseButtonTemplate);
 			currentlyPlayingSongNumber = songNumber;
+			//songNumber -1 because referencing the actual index
 		} else if (currentlyPlayingSongNumber === songNumber) {
 			// Switch from Pause -> Play button to pause currently playing song.
 			$(this).html(playButtonTemplate);
@@ -63,7 +64,7 @@ var createSongRow = function(songNumber, songName, songLength) {
 };
 
 var setCurrentAlbum = function(album) {
-
+	//exposes album to global scope
 	currentAlbum = album;
 
  	// Select elements that we want to populate with text dynamically

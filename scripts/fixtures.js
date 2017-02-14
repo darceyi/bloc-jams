@@ -1,3 +1,4 @@
+// each album is referenced by currentAlbum
 var albumPicasso = {
 	title: 'The Colors',
 	artist: 'Pablo Picasso',
@@ -5,7 +6,7 @@ var albumPicasso = {
 	year: '1881',
 	albumArtUrl: 'assets/images/album_covers/01.png',
 	songs: [
-		{ title: 'Blue', duration: '4:26' },
+		{ title: 'Blue', duration: '4:26' }, //referenced by currentSongFromAlbum // indices from songs array used by currentlyPLayingSongNumber
 		{ title: 'Green', duration: '3:14' },
 		{ title: 'Red', duration: '5:01' },
 		{ title: 'Pink', duration: '3:21' },
