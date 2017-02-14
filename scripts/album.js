@@ -17,25 +17,32 @@ var createSongRow = function(songNumber, songName, songLength) {
 			// Revert to song number for currently playing song because user started playing new song.
 			var currentlyPlayingSongElement = $('.song-item-number[data-song-number="' + currentlyPlayingSongNumber + '"]');
 			currentlyPlayingSongElement.html(currentlyPlayingSongNumber);
-			console.log("currentlyPlayingSongNumber !== null and shows song num again because going to new song");
+			// console.log("currentlyPlayingSongNumber !== null");
 		}
 		if (currentlyPlayingSongNumber !== songNumberAttr) {
 			// Switch from Play -> Pause button to indicate new song is playing.
 			$(this).html(pauseButtonTemplate);
 			currentlyPlayingSongNumber = songNumberAttr;
-			console.log("currentlyPlayingSongNumber !== songNumberAttr and PAUSES");
+			currentSongFromAlbum = currentAlbum.songs[songNumberAttr - 1];
 			// should show the song name and artist name
-			$('.song-name').html("working?");
-			$('.artist-name').html("working");
+			// $('.song-name').html("working");
+			// $('.artist-name').html("working");
+			// console.log("currentlyPlayingSongNumber !== songNumberAttr and PAUSES");
 			//songNumber -1 because referencing the actual index
 		} else if (currentlyPlayingSongNumber === songNumberAttr) {
 			// Switch from Pause -> Play button to pause currently playing song.
 			$(this).html(playButtonTemplate);
 			currentlyPlayingSongNumber = null;
-			console.log("currentlyPlayingSongNumber === songNumberAttr and PLAYS");
+			currentSongFromAlbum = null;
+			// console.log("currentlyPlayingSongNumber === songNumberAttr and shows PLAY button");
 		}
 	};
 
+	var updatePlayerBarSong = function() {
+		$('.currently-playing .song-name').html(currentSongFromAlbum.title);
+		$('.currently-playing .artist-name').html(currentAlbum.artist);
+		$('.currently-playing .artist-song-mobile').html(currentSongFromAlbum.title + ' - ' + currentAlbum.artist);
+	};
 
 //Attempt to write the onHover and offHover functions. hover()
 //Note that we no longer need to use the getSongItem() helper because we can use jQuery's find() method to 
@@ -47,16 +54,14 @@ var createSongRow = function(songNumber, songName, songLength) {
 		var songItem = $(this).find('.song-item-number');
 		if (songItem.attr('data-song-number') !== currentlyPlayingSongNumber) {
                songItem.html(playButtonTemplate);
-               console.log("data-song-number !== currentlyPlayingSongNumber and PLAY BUTTON");
-               // you dont want hover to change the songFromAlbum! only clickHandler
+               // console.log("data-song-number !== currentlyPlayingSongNumber and PLAY BUTTON");
+               // you dont want hover to change the currentSongFromAlbum. only clickHandler
      	}
-
 	};
 
     var offHover = function(event) {
         var songNumberCell = $(this).find('.song-item-number');
         var songNumberAttr = songNumberCell.attr('data-song-number');
-
         if (songNumberAttr !== currentlyPlayingSongNumber) {
             songNumberCell.html(songNumberAttr);
         }
@@ -75,7 +80,6 @@ var createSongRow = function(songNumber, songName, songLength) {
 var setCurrentAlbum = function(album) {
 	//exposes album to global scope
 	currentAlbum = album;
-
  	// Select elements that we want to populate with text dynamically
 	var $albumTitle = $('.album-view-title');
 	var $albumArtist = $('.album-view-artist');
@@ -105,13 +109,13 @@ var setCurrentAlbum = function(album) {
 // Album button templates
 var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
 var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause"></span></a>';
-
+var playerBarPlayButton = '<span class="ion-play"></span>';
+var playerBarPauseButton = '<span class="ion-pause"></span>';
 // Store state of songs and albums
 var currentlyPlayingSongNumber = null;
 var currentAlbum = null;
 //Will hold the currently playing song object from the songs array
 var currentSongFromAlbum  = null;
-
 
 $(document).ready(function() {
 	
