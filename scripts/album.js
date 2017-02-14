@@ -11,22 +11,28 @@ var createSongRow = function(songNumber, songName, songLength) {
 
 	var clickHandler = function() {
 
-		var songNumber = $(this).attr('data-song-number');
+		var songNumberAttr = $(this).attr('data-song-number'); //"this" is referencing the table cell
 
 		if (currentlyPlayingSongNumber !== null) {
 			// Revert to song number for currently playing song because user started playing new song.
 			var currentlyPlayingSongElement = $('.song-item-number[data-song-number="' + currentlyPlayingSongNumber + '"]');
 			currentlyPlayingSongElement.html(currentlyPlayingSongNumber);
+			console.log("currentlyPlayingSongNumber !== null and shows song num again because going to new song");
 		}
-		if (currentlyPlayingSongNumber !== songNumber) {
+		if (currentlyPlayingSongNumber !== songNumberAttr) {
 			// Switch from Play -> Pause button to indicate new song is playing.
 			$(this).html(pauseButtonTemplate);
-			currentlyPlayingSongNumber = songNumber;
+			currentlyPlayingSongNumber = songNumberAttr;
+			console.log("currentlyPlayingSongNumber !== songNumberAttr and PAUSES");
+			// should show the song name and artist name
+			$('.song-name').html("working?");
+			$('.artist-name').html("working");
 			//songNumber -1 because referencing the actual index
-		} else if (currentlyPlayingSongNumber === songNumber) {
+		} else if (currentlyPlayingSongNumber === songNumberAttr) {
 			// Switch from Pause -> Play button to pause currently playing song.
 			$(this).html(playButtonTemplate);
 			currentlyPlayingSongNumber = null;
+			console.log("currentlyPlayingSongNumber === songNumberAttr and PLAYS");
 		}
 	};
 
@@ -41,15 +47,18 @@ var createSongRow = function(songNumber, songName, songLength) {
 		var songItem = $(this).find('.song-item-number');
 		if (songItem.attr('data-song-number') !== currentlyPlayingSongNumber) {
                songItem.html(playButtonTemplate);
+               console.log("data-song-number !== currentlyPlayingSongNumber and PLAY BUTTON");
+               // you dont want hover to change the songFromAlbum! only clickHandler
      	}
+
 	};
 
     var offHover = function(event) {
         var songNumberCell = $(this).find('.song-item-number');
-        var songNumber = songNumberCell.attr('data-song-number');
+        var songNumberAttr = songNumberCell.attr('data-song-number');
 
-        if (songNumber !== currentlyPlayingSongNumber) {
-            songNumberCell.html(songNumber);
+        if (songNumberAttr !== currentlyPlayingSongNumber) {
+            songNumberCell.html(songNumberAttr);
         }
     };
 
