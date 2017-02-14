@@ -11,18 +11,18 @@ var createSongRow = function(songNumber, songName, songLength) {
 
 	var clickHandler = function() {
 
-		var songItemNumber = $(this).attr('data-song-number');
+		var songNumber = $(this).attr('data-song-number');
 
 		if (currentlyPlayingSongNumber !== null) {
 			// Revert to song number for currently playing song because user started playing new song.
 			var currentlyPlayingSongElement = $('.song-item-number[data-song-number="' + currentlyPlayingSongNumber + '"]');
 			currentlyPlayingSongElement.html(currentlyPlayingSongNumber);
 		}
-		if (currentlyPlayingSongNumber !== songItemNumber) {
+		if (currentlyPlayingSongNumber !== songNumber) {
 			// Switch from Play -> Pause button to indicate new song is playing.
 			$(this).html(pauseButtonTemplate);
-			currentlyPlayingSongNumber = songItemNumber;
-		} else if (currentlyPlayingSongNumber === songItemNumber) {
+			currentlyPlayingSongNumber = songNumber;
+		} else if (currentlyPlayingSongNumber === songNumber) {
 			// Switch from Pause -> Play button to pause currently playing song.
 			$(this).html(playButtonTemplate);
 			currentlyPlayingSongNumber = null;
@@ -35,15 +35,6 @@ var createSongRow = function(songNumber, songName, songLength) {
 //get the element with .song-item-number. Use this to refer to the row.
 
 
-// var offHover = function() {
-
-// 		var songItem = $(this).find('.song-item-number');
-// 		var songItemNumber = songItem.attr('data-song-number');
-// 		if (songItemNumber !== currentlyPlayingSong) {
-// 				songItem.html(songItemNumber);
-// 		}
-// };
-// };
 	var onHover = function() {
 		
 		var songItem = $(this).find('.song-item-number');
