@@ -1,3 +1,17 @@
+// Album button templates
+var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
+var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause"></span></a>';
+var playerBarPlayButton = '<span class="ion-play"></span>';
+var playerBarPauseButton = '<span class="ion-pause"></span>';
+// Store state of songs and albums
+var currentlyPlayingSongNumber = null;
+var currentAlbum = null;
+//Will hold the currently playing song object from the songs array
+var currentSongFromAlbum  = null;
+//vars to hold jquery selectors for the next and prev buttons
+var $previousButton = $('.main-controls .previous');
+var $nextButton =  $('.main-controls .next');
+
 var createSongRow = function(songNumber, songName, songLength) {
 	var template =
 		'<tr class = "album-view-song-item">'
@@ -24,6 +38,7 @@ var createSongRow = function(songNumber, songName, songLength) {
 			$(this).html(pauseButtonTemplate);
 			currentlyPlayingSongNumber = songNumberAttr;
 			currentSongFromAlbum = currentAlbum.songs[songNumberAttr - 1];
+			updatePlayerBarSong(); //when a new song is plaued to display pause in player-bar
 			// should show the song name and artist name
 			// $('.song-name').html("working");
 			// $('.artist-name').html("working");
@@ -32,6 +47,7 @@ var createSongRow = function(songNumber, songName, songLength) {
 		} else if (currentlyPlayingSongNumber === songNumberAttr) {
 			// Switch from Pause -> Play button to pause currently playing song.
 			$(this).html(playButtonTemplate);
+			$('.main-controls .play-pause').html(playerBarPlayButton);//revert html of element to playerbarPLAYbutton when song is paused
 			currentlyPlayingSongNumber = null;
 			currentSongFromAlbum = null;
 			// console.log("currentlyPlayingSongNumber === songNumberAttr and shows PLAY button");
@@ -42,15 +58,14 @@ var createSongRow = function(songNumber, songName, songLength) {
 		$('.currently-playing .song-name').html(currentSongFromAlbum.title);
 		$('.currently-playing .artist-name').html(currentAlbum.artist);
 		$('.currently-playing .artist-song-mobile').html(currentSongFromAlbum.title + ' - ' + currentAlbum.artist);
+		$('.main-controls .play-pause').html(playerBarPauseButton);
 	};
 
 //Attempt to write the onHover and offHover functions. hover()
 //Note that we no longer need to use the getSongItem() helper because we can use jQuery's find() method to 
 //get the element with .song-item-number. Use this to refer to the row.
 
-
 	var onHover = function() {
-		
 		var songItem = $(this).find('.song-item-number');
 		if (songItem.attr('data-song-number') !== currentlyPlayingSongNumber) {
                songItem.html(playButtonTemplate);
@@ -66,7 +81,6 @@ var createSongRow = function(songNumber, songName, songLength) {
             songNumberCell.html(songNumberAttr);
         }
     };
-
 	//find the element with the .song-item-number class that's contained in whichever row is clicked
 	$row.find('.song-item-number').click(clickHandler);
 	//The hover() event listener at #2 combines the mouseover and mouseleave functions. 
@@ -77,6 +91,7 @@ var createSongRow = function(songNumber, songName, songLength) {
 	return $row;
 };
 
+
 var setCurrentAlbum = function(album) {
 	//exposes album to global scope
 	currentAlbum = album;
@@ -86,7 +101,6 @@ var setCurrentAlbum = function(album) {
 	var $albumReleaseInfo = $('.album-view-release-info');
 	var $albumImage = $('.album-cover-art');
 	var $albumSongList = $('.album-view-song-list');
-
 //We call jQuery's text() method to replace the content of the text nodes, instead of setting 
 //firstChild.nodeValue. We also change the setAttribute() method to jQuery's  attr() method, 
 //which changes the element attribute using the same arguments.
@@ -106,32 +120,21 @@ var setCurrentAlbum = function(album) {
 	}
 };
 
-// Album button templates
-var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
-var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause"></span></a>';
-var playerBarPlayButton = '<span class="ion-play"></span>';
-var playerBarPauseButton = '<span class="ion-pause"></span>';
-// Store state of songs and albums
-var currentlyPlayingSongNumber = null;
-var currentAlbum = null;
-//Will hold the currently playing song object from the songs array
-var currentSongFromAlbum  = null;
+//Match the currently playing song's object with its corresponding index in the songs array
+//return index of a song found in album's song array
+var trackIndex = function(album, song) {
+	return album.songs.indexOf(song);
+};
+
+//when we call NEXT and PREVIOUS functions in ourapp, they should increment or decrement the index of the
+//current song in the array
+var nextSong = function() {
+
+};
+
 
 $(document).ready(function() {
-	
-	setCurrentAlbum(albumPicasso);
-
-	var albums = [albumPicasso, albumDerp, albumMarconi];
-
-	var index = 1;
-
-	var toggleCovers = document.getElementsByClassName('album-cover-art')[0];
-	
-	toggleCovers.addEventListener('click', function(){
-		setCurrentAlbum(albums[index]);
-		index++;
-		if (index === albums.length){
-			index = 0;
-		}
-	});
+		setCurrentAlbum(albumPicasso);
+		$previousButton.click(previousSong);
+		$nextButton.click(nextSong);
 });
