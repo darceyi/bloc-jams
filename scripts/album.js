@@ -25,7 +25,7 @@ var createSongRow = function(songNumber, songName, songLength) {
 
 	var clickHandler = function() {
 
-		var songNumberAttr = $(this).attr('data-song-number'); //"this" is referencing the table cell
+		var songNumberAttr = parseInt($(this).attr('data-song-number')); //"this" is referencing the table cell
 
 		if (currentlyPlayingSongNumber !== null) {
 			// Revert to song number for currently playing song because user started playing new song.
@@ -33,18 +33,18 @@ var createSongRow = function(songNumber, songName, songLength) {
 			currentlyPlayingSongElement.html(currentlyPlayingSongNumber);
 			// console.log("currentlyPlayingSongNumber !== null");
 		}
-		if (currentlyPlayingSongNumber !== songNumberAttr) {
+		if (currentlyPlayingSongNumber !== parseInt(songNumberAttr)) {
 			// Switch from Play -> Pause button to indicate new song is playing.
 			$(this).html(pauseButtonTemplate);
-			currentlyPlayingSongNumber = songNumberAttr;
-			currentSongFromAlbum = currentAlbum.songs[songNumberAttr - 1];
+			currentlyPlayingSongNumber = parseInt(songNumberAttr);
+			currentSongFromAlbum = currentAlbum.songs[parseInt(songNumberAttr) - 1];
 			updatePlayerBarSong(); //when a new song is plaued to display pause in player-bar
 			// should show the song name and artist name
 			// $('.song-name').html("working");
 			// $('.artist-name').html("working");
 			// console.log("currentlyPlayingSongNumber !== songNumberAttr and PAUSES");
 			//songNumber -1 because referencing the actual index
-		} else if (currentlyPlayingSongNumber === songNumberAttr) {
+		} else if (currentlyPlayingSongNumber === parseInt(songNumberAttr)) {
 			// Switch from Pause -> Play button to pause currently playing song.
 			$(this).html(playButtonTemplate);
 			$('.main-controls .play-pause').html(playerBarPlayButton);//revert html of element to playerbarPLAYbutton when song is paused
@@ -76,10 +76,11 @@ var createSongRow = function(songNumber, songName, songLength) {
 
     var offHover = function(event) {
         var songNumberCell = $(this).find('.song-item-number');
-        var songNumberAttr = songNumberCell.attr('data-song-number');
+        var songNumberAttr = parseInt(songNumberCell.attr('data-song-number'));
         if (songNumberAttr !== currentlyPlayingSongNumber) {
             songNumberCell.html(songNumberAttr);
         }
+        console.log("songNumberAttr type is " + typeof songNumberAttr + "\n and currentlyPlayingSongNumber type is " + typeof currentlyPlayingSongNumber);
     };
 	//find the element with the .song-item-number class that's contained in whichever row is clicked
 	$row.find('.song-item-number').click(clickHandler);
@@ -121,17 +122,78 @@ var setCurrentAlbum = function(album) {
 };
 
 //Match the currently playing song's object with its corresponding index in the songs array
-//return index of a song found in album's song array
+//RETURN INDEX OF A SONG found in album's song array
 var trackIndex = function(album, song) {
 	return album.songs.indexOf(song);
 };
 
 //when we call NEXT and PREVIOUS functions in ourapp, they should increment or decrement the index of the
 //current song in the array
+// is this supposed to be called in the clickHandler function too???
 var nextSong = function() {
+	// ???
+	var getLastSongNumber = function(index) {
+		return index == 0 ? currentAlbum.songs.length : index;
+	}; 
+
+	var currentSongIndex = trackIndex(currentAlbum, currentSongFromAlbum);
+
+	currentSongIndex++; // Incrementing the song -- why here ???
+
+	if (currentSongIndex >= currentAlbum.songs.length) {
+		currentSongIndex = 0;
+	}
+
+	//Set new current song
+	currentlyPlayingSongNumber = currentSongIndex + 1;
+	currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
+
+	//Update player bar info -- why dont we just call the updatePlayerBar function?
+	$('.currently-playing .song-name').html(currentSongFromAlbum.title);
+	$('.currently-playing .artist-name').html(currentAlbum.artist);
+	$('.currently-playing .artist-song-mobile').html(currentSongFromAlbum.title + ' - ' + currentAlbum.artist);
+	$('.main-controls .play-pause').html(playerBarPauseButton);
+
+
+	var lastSongNumber = getLastSongNumber(currentSongIndex); // ???
+	var $nextSongNumberCell = $('.song-item-number[data-song-number="' + currentlyPlayingSongNumber + '"]');
+	var $lastSongNumberCell = $('.song-item-number[data-song-number="' + lastSongNumber + '"]');
+
+	$nextSongNumberCell.html(pauseButtonTemplate);
+	$lastSongNumberCell.html(lastSongNumber);
 
 };
 
+var previousSong = function() {
+	var getLastSongNumber = function(index) {
+		return index == (currentAlbum.songs.length -1) ? 1 : index + 2;
+	}
+
+	var currentSongIndex = trackIndex(currentAlbum, currentSongFromAlbum);
+
+	currentSongIndex--;
+
+	if (currentSongIndex < 0) {
+		currentSongIndex = currentAlbum.songs.length -1;
+	}
+
+	//Set a new current song
+	currentlyPlayingSongNumber = currentSongIndex + 1;
+	currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
+
+	//Update player bar info -- why dont we just call the updatePlayerBar function?
+	$('.currently-playing .song-name').html(currentSongFromAlbum.title);
+	$('.currently-playing .artist-name').html(currentAlbum.artist);
+	$('.currently-playing .artist-song-mobile').html(currentSongFromAlbum.title + ' - ' + currentAlbum.artist);
+	$('.main-controls .play-pause').html(playerBarPauseButton);
+
+	var lastSongNumber = getLastSongNumber(currentSongIndex); // ???
+	var $previousSongNumberCell = $('.song-item-number[data-song-number="' + currentlyPlayingSongNumber + '"]');
+	var $lastSongNumberCell = $('.song-item-number[data-song-number="' + lastSongNumber + '"]');
+
+	$previousSongNumberCell.html(pauseButtonTemplate);
+	$lastSongNumberCell.html(lastSongNumber);
+};
 
 $(document).ready(function() {
 		setCurrentAlbum(albumPicasso);
