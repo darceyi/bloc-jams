@@ -42,7 +42,7 @@ var createSongRow = function(songNumber, songName, songLength) {
 			currentlyPlayingSongElement.html(currentlyPlayingSongNumber);
 			// console.log("currentlyPlayingSongNumber !== null");
 		}
-		if (currentlyPlayingSongNumber !== parseInt(songNumberAttr)) {
+		if (currentlyPlayingSongNumber !== songNumberAttr) {
 			// Switch from Play -> Pause button to indicate new song is playing.
 			$(this).html(pauseButtonTemplate);
 			setSong(songNumberAttr);
@@ -52,7 +52,7 @@ var createSongRow = function(songNumber, songName, songLength) {
 			// $('.artist-name').html("working");
 			// console.log("currentlyPlayingSongNumber !== songNumberAttr and PAUSES");
 			//songNumber -1 because referencing the actual index
-		} else if (currentlyPlayingSongNumber === parseInt(songNumberAttr)) {
+		} else if (currentlyPlayingSongNumber === songNumberAttr) {
 			// Switch from Pause -> Play button to pause currently playing song.
 			$(this).html(playButtonTemplate);
 			$('.main-controls .play-pause').html(playerBarPlayButton);//revert html of element to playerbarPLAYbutton when song is paused
@@ -62,21 +62,16 @@ var createSongRow = function(songNumber, songName, songLength) {
 		}
 	};
 
-	var updatePlayerBarSong = function() {
-		$('.currently-playing .song-name').html(currentSongFromAlbum.title);
-		$('.currently-playing .artist-name').html(currentAlbum.artist);
-		$('.currently-playing .artist-song-mobile').html(currentSongFromAlbum.title + ' - ' + currentAlbum.artist);
-		$('.main-controls .play-pause').html(playerBarPauseButton);
-	};
 
 //Attempt to write the onHover and offHover functions. hover()
 //Note that we no longer need to use the getSongItem() helper because we can use jQuery's find() method to 
 //get the element with .song-item-number. Use this to refer to the row.
 
 	var onHover = function() {
-		var songItem = $(this).find('.song-item-number');
-		if (songItem.attr('data-song-number') !== currentlyPlayingSongNumber) {
-               songItem.html(playButtonTemplate);
+		var songNumberCell = $(this).find('.song-item-number');
+		var songNumberAttr = parseInt(songNumberCell.attr('data-song-number'));
+		if (songNumberAttr !== currentlyPlayingSongNumber) {
+               songNumberCell.html(playButtonTemplate);
                // console.log("data-song-number !== currentlyPlayingSongNumber and PLAY BUTTON");
                // you dont want hover to change the currentSongFromAlbum. only clickHandler
      	}
@@ -133,6 +128,12 @@ var trackIndex = function(album, song) {
 	return album.songs.indexOf(song);
 };
 
+var updatePlayerBarSong = function() {
+	$('.currently-playing .song-name').html(currentSongFromAlbum.title);
+	$('.currently-playing .artist-name').html(currentAlbum.artist);
+	$('.currently-playing .artist-song-mobile').html(currentSongFromAlbum.title + ' - ' + currentAlbum.artist);
+	$('.main-controls .play-pause').html(playerBarPauseButton);
+};
 //when we call NEXT and PREVIOUS functions in ourapp, they should increment or decrement the index of the
 //current song in the array
 // is this supposed to be called in the clickHandler function too???
@@ -167,7 +168,6 @@ var nextSong = function() {
 
 	$nextSongNumberCell.html(pauseButtonTemplate);
 	$lastSongNumberCell.html(lastSongNumber);
-
 };
 
 var previousSong = function() {
