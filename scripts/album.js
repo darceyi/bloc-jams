@@ -56,8 +56,7 @@ var createSongRow = function(songNumber, songName, songLength) {
 			// Switch from Pause -> Play button to pause currently playing song.
 			$(this).html(playButtonTemplate);
 			$('.main-controls .play-pause').html(playerBarPlayButton);//revert html of element to playerbarPLAYbutton when song is paused
-			currentlyPlayingSongNumber = null;
-			currentSongFromAlbum = null;
+			setSong(null);
 			// console.log("currentlyPlayingSongNumber === songNumberAttr and shows PLAY button");
 		}
 	};
@@ -122,18 +121,18 @@ var setCurrentAlbum = function(album) {
 	}
 };
 
-//Match the currently playing song's object with its corresponding index in the songs array
-//RETURN INDEX OF A SONG found in album's song array
-var trackIndex = function(album, song) {
-	return album.songs.indexOf(song);
-};
-
 var updatePlayerBarSong = function() {
 	$('.currently-playing .song-name').html(currentSongFromAlbum.title);
 	$('.currently-playing .artist-name').html(currentAlbum.artist);
 	$('.currently-playing .artist-song-mobile').html(currentSongFromAlbum.title + ' - ' + currentAlbum.artist);
 	$('.main-controls .play-pause').html(playerBarPauseButton);
 };
+//Match the currently playing song's object with its corresponding index in the songs array
+//RETURN INDEX OF A SONG found in album's song array
+var trackIndex = function(album, song) {
+	return album.songs.indexOf(song);
+};
+
 //when we call NEXT and PREVIOUS functions in ourapp, they should increment or decrement the index of the
 //current song in the array
 // is this supposed to be called in the clickHandler function too???
@@ -173,7 +172,7 @@ var nextSong = function() {
 var previousSong = function() {
 	var getLastSongNumber = function(index) {
 		return index == (currentAlbum.songs.length -1) ? 1 : index + 2;
-	}
+	};
 
 	var currentSongIndex = trackIndex(currentAlbum, currentSongFromAlbum);
 
