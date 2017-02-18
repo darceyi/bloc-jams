@@ -136,10 +136,12 @@ var trackIndex = function(album, song) {
 //when we call NEXT and PREVIOUS functions in ourapp, they should increment or decrement the index of the
 //current song in the array
 // is this supposed to be called in the clickHandler function too???
+
 var nextSong = function() {
 	// ???
 	var getLastSongNumber = function(index) {
 		return index == 0 ? currentAlbum.songs.length : index;
+		console.log(index, "getlastsongNumber() nextSong");
 	}; 
 
 	var currentSongIndex = trackIndex(currentAlbum, currentSongFromAlbum);
@@ -150,15 +152,16 @@ var nextSong = function() {
 		currentSongIndex = 0;
 	}
 
+	console.log(currentSongIndex, "current song index");
+
 	//Set new current song
 	currentlyPlayingSongNumber = currentSongIndex + 1;
 	currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
+	console.log(currentlyPlayingSongNumber, "currentlyPlayingSongNumber");
+	console.log(currentSongFromAlbum, "currentSongFromAlbum");
 
 	//Update player bar info -- why dont we just call the updatePlayerBar function?
-	$('.currently-playing .song-name').html(currentSongFromAlbum.title);
-	$('.currently-playing .artist-name').html(currentAlbum.artist);
-	$('.currently-playing .artist-song-mobile').html(currentSongFromAlbum.title + ' - ' + currentAlbum.artist);
-	$('.main-controls .play-pause').html(playerBarPauseButton);
+	updatePlayerBarSong();
 
 
 	var lastSongNumber = getLastSongNumber(currentSongIndex); // ???
@@ -167,11 +170,17 @@ var nextSong = function() {
 
 	$nextSongNumberCell.html(pauseButtonTemplate);
 	$lastSongNumberCell.html(lastSongNumber);
+
+	console.log(lastSongNumber, "lastSongNumber");
+	console.log($lastSongNumberCell, "lastSongNumberCell");
+	console.log($nextSongNumberCell, "nextSongNumberCell");
 };
 
 var previousSong = function() {
 	var getLastSongNumber = function(index) {
 		return index == (currentAlbum.songs.length -1) ? 1 : index + 2;
+		console.log(index, "getlastsongNumber() previousSong");
+
 	};
 
 	var currentSongIndex = trackIndex(currentAlbum, currentSongFromAlbum);
@@ -187,10 +196,8 @@ var previousSong = function() {
 	currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
 
 	//Update player bar info -- why dont we just call the updatePlayerBar function?
-	$('.currently-playing .song-name').html(currentSongFromAlbum.title);
-	$('.currently-playing .artist-name').html(currentAlbum.artist);
-	$('.currently-playing .artist-song-mobile').html(currentSongFromAlbum.title + ' - ' + currentAlbum.artist);
-	$('.main-controls .play-pause').html(playerBarPauseButton);
+	updatePlayerBarSong();
+	
 
 	var lastSongNumber = getLastSongNumber(currentSongIndex); // ???
 	var $previousSongNumberCell = getSongNumberCell(currentlyPlayingSongNumber);
