@@ -34,6 +34,14 @@ var setSong = function(songNumberAttr) {
 	setVolume(currentVolume);
 };
 
+//We need to create a method that can change the current song's playback location.
+//seek() uses the Buzz setTime() method to change the position in a song to a specified time.
+var seek = function(time) {
+    if (currentSoundFile) {
+        currentSoundFile.setTime(time);
+    }
+};
+
 var setVolume = function(volume) {
 	if (currentSoundFile) {
 		currentSoundFile.setVolume(volume);
@@ -70,6 +78,7 @@ var createSongRow = function(songNumber, songName, songLength) {
 			$(this).html(pauseButtonTemplate);
 			setSong(songNumberAttr);
 			currentSoundFile.play();
+			updateSeekBarWhileSongPlays();
 			updatePlayerBarSong(); //when a new song is plaued to display pause in player-bar
 			// should show the song name and artist name
 			// $('.song-name').html("working");
@@ -84,6 +93,7 @@ var createSongRow = function(songNumber, songName, songLength) {
 				$('.main-controls .play-pause').html(playerBarPauseButton);//revert html of element to playerbarPLAYbutton when song is paused
 				//start plaging the song again
 				currentSoundFile.play();
+				updateSeekBarWhileSongPlays();
 			} else {
 				//and set the content of the song number cell and player bars pause button back to play button
 				$(this).html(playButtonTemplate);
@@ -153,6 +163,91 @@ var setCurrentAlbum = function(album) {
 	}
 };
 
+//The interface for the seek bars works, but it doesn't affect the song position or volume.
+var updateSeekBarWhileSongPlays = function() {
+
+     if (currentSoundFile) {
+         // #10
+         currentSoundFile.bind('timeupdate', function(event) {
+             // #11
+             var seekBarFillRatio = this.getTime() / this.getDuration();
+             var $seekBar = $('.seek-control .seek-bar');
+ 
+             updateSeekPercentage($seekBar, seekBarFillRatio);
+         });
+     }
+ };
+
+//The function must take two arguments, one for the seek bar to alter (either the volume or audio playback controls) 
+//and one for the ratio that will determine the  width and left values of the .fill and .thumb classes, respectively.
+//The ratio must be converted to a percentage so we can set the CSS property values as percents.
+//The percentage must be passed into jQuery functions that set the width and  left CSS properties.
+var updateSeekPercentage = function($seekBar, seekBarFillRatio) {
+	//We start by multiplying the ratio by 100 to determine a percentage. 
+	var offsetXPercent = seekBarFillRatio * 100;
+	//we use the built-in JavaScript Math.max() function to make sure our percentage isn't less than zero and 
+	//the Math.min() function to make sure it doesn't exceed 100.
+	offsetXPercent = Math.max(0, offsetXPercent);
+	offsetXPercent = Math.min(100, offsetXPercent);
+	//er convert our percenage to a string and add the % character
+	var percentageString = offsetXPercent + '%';
+	//wehn we se the width and fill class and the left value of the thumb class, the css interprets
+	//the value as a percent instead of a unitless number between 0 and 100
+	$seekBar.find('.fill').width(percentageString);
+    $seekBar.find('.thumb').css({left: percentageString});
+};
+
+var setupSeekBars = function() {
+	//At #6, we are using jQuery to find all elements in the DOM with a class of "seek-bar" that are contained within 
+	//the element with a class of "player-bar". This will return a jQuery wrapped array containing both 
+	//the song seek control and the volume control.
+	var $seekBars = $('.player-bar .seek-bar');
+	//The seek bar that updates will be determined by the target of the event.
+	$seekBars.click(function(event) {
+		//we see a new property on the event object called pageX. This is a jQuery-specific event value, which holds 
+		//the X (or horizontal) coordinate at which the event occurred (think of the X-Y coordinate plane)
+		//We subtract the offset() of the seek bar held in $(this) from the left side. 
+		var offsetXPercent = event.pageX - $(this).offset().left;
+		var barWidth = $(this).width();
+		var seekBarFillRatio = offsetXPercent / barWidth;
+		updateSeekPercentage($(this), seekBarFillRatio);
+	});
+	//At #7, we find elements with a class of .thumb inside our $seekBars and add an event listener for the mousedown event. 
+	//A click event fires when a mouse is pressed and released quickly, but the mousedown event will fire as soon as the mouse 
+	//button is pressed down. 
+	//jQuery allows us access to a shorthand method of attaching the mousedown event by calling mousedown on a jQuery collection.
+	$seekBars.find('.thumb').mousedown(function(event) {
+		//At #8, we are taking the context of the event and wrapping it in jQuery. 
+		//In this scenario, this will be equal to the .thumb node that was clicked. Because we are attaching an event to both 
+		//the song seek and volume control, this is an important way for us to determine which of these nodes dispatched the 
+		//event. We can then use the  parent method, which will select the immediate parent of the node. This will be whichever 
+		//seek bar this .thumb belongs to.
+		var $seekBar = $(this).parent();
+		//new way to track events, jQuery's bind() event. bind() behaves similarly to addEventListener() in that it takes a 
+		//string of an event instead of wrapping the event in a method like we've seen with all other jQuery events thus far. 
+		//We use  bind() because it allows us to namespace event listeners  
+		//The event handler inside the bind() call is identical to the click behavior. The event handler on $(document) is the 
+		//reason we need to use bind() with namespacing. 
+		//We've attached the mousemove event to $(document) to make sure that we can drag the thumb after mousing down, 
+		//even when the mouse leaves the seek bar. This allows for a smoother experience for seeking to a song position. 
+		$(document).bind('mousemove.thumb', function(event){
+            var offsetX = event.pageX - $seekBar.offset().left;
+            var barWidth = $seekBar.width();
+            var seekBarFillRatio = offsetX / barWidth;
+ 
+            updateSeekPercentage($seekBar, seekBarFillRatio);
+        });
+        //we bind the mouseup event with a .thumb namespace. The event handler uses the unbind() event method, which removes 
+        //the previous event listeners that we just added. If we fail to unbind() them, the thumb and fill would continue to 
+        //move even after the user released the mouse. Comment out this block to demonstrate the unintended behavior.
+		$(document).bind('mouseup.thumb', function() {
+            $(document).unbind('mousemove.thumb');
+            $(document).unbind('mouseup.thumb');
+        });
+	});
+
+};
+
 var updatePlayerBarSong = function() {
 	$('.currently-playing .song-name').html(currentSongFromAlbum.title);
 	$('.currently-playing .artist-name').html(currentAlbum.artist);
@@ -189,6 +284,7 @@ var nextSong = function() {
 
 	//Play songs when skipping
 	currentSoundFile.play();
+	updateSeekBarWhileSongPlays();
 	//Update player bar info -- why dont we just call the updatePlayerBar function?
 	updatePlayerBarSong();
 
@@ -220,6 +316,7 @@ var previousSong = function() {
 
 	//play songs when skipping
 	currentSoundFile.play();
+	updateSeekBarWhileSongPlays();
 
 	//Update player bar info -- why dont we just call the updatePlayerBar function?
 	updatePlayerBarSong();
@@ -254,7 +351,6 @@ var togglePlayFromPlayerBar = function() {
 		currentSoundFile.pause();
 	}
 };
-
 	
 $(document).ready(function() {
 		setCurrentAlbum(albumPicasso);
@@ -262,4 +358,5 @@ $(document).ready(function() {
 		$nextButton.click(nextSong);
 		//add a click() event to it in the $(document).ready() block with togglePlayFromPlayerBar() as an event handler.
 		$playerBarControl.click(togglePlayFromPlayerBar);
+		setupSeekBars();
 });
