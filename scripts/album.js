@@ -8,13 +8,36 @@ var currentlyPlayingSongNumber = null;
 var currentAlbum = null;
 //Will hold the currently playing song object from the songs array
 var currentSongFromAlbum  = null;
+//store the sound object in this variable when we set a new current song
+var currentSoundFile = null;
+var currentVolume = 80;
 //vars to hold jquery selectors for the next and prev buttons
 var $previousButton = $('.main-controls .previous');
 var $nextButton =  $('.main-controls .next');
 
 var setSong = function(songNumberAttr) {
+	//If we click to play a different song before a the current song is finished, we need to stop the current song 
+	//before we set a new one. Add a conditional statement to the beginning of setSong() that checks for a defined 
+	//currentSoundFile and then runs currentSoundFile.stop() if true
+	if (currentSoundFile) {
+		currentSoundFile.stop();
+	}
+
 	currentlyPlayingSongNumber = parseInt(songNumberAttr);
 	currentSongFromAlbum = currentAlbum.songs[songNumberAttr - 1];
+	// At #1, we assign a new Buzz sound object. We've passed the audio file via the  audioUrl property on the currentSongFromAlbum object.
+	currentSoundFile = new buzz.sound(currentSongFromAlbum.audioUrl,{
+		formats: ['mp3'],
+		preload: true
+	});
+
+	setVolume(currentVolume);
+};
+
+var setVolume = function(volume) {
+	if (currentSoundFile) {
+		currentSoundFile.setVolume(volume);
+	}
 };
 
 var getSongNumberCell = function(number) {
@@ -42,25 +65,34 @@ var createSongRow = function(songNumber, songName, songLength) {
 			currentlyPlayingSongElement.html(currentlyPlayingSongNumber);
 			// console.log("currentlyPlayingSongNumber !== null");
 		}
-		if (currentlyPlayingSongNumber !== songNumberAttr) {
+		if (currentlyPlayingSongNumber !== songNumberAttr) { //when click song that is not the currentply playing song
 			// Switch from Play -> Pause button to indicate new song is playing.
 			$(this).html(pauseButtonTemplate);
 			setSong(songNumberAttr);
+			currentSoundFile.play();
 			updatePlayerBarSong(); //when a new song is plaued to display pause in player-bar
 			// should show the song name and artist name
 			// $('.song-name').html("working");
 			// $('.artist-name').html("working");
-			// console.log("currentlyPlayingSongNumber !== songNumberAttr and PAUSES");
 			//songNumber -1 because referencing the actual index
-		} else if (currentlyPlayingSongNumber === songNumberAttr) {
-			// Switch from Pause -> Play button to pause currently playing song.
-			$(this).html(playButtonTemplate);
-			$('.main-controls .play-pause').html(playerBarPlayButton);//revert html of element to playerbarPLAYbutton when song is paused
-			setSong(null);
-			// console.log("currentlyPlayingSongNumber === songNumberAttr and shows PLAY button");
+		} else if (currentlyPlayingSongNumber === songNumberAttr) { //when clicks pause button for same song thats playing
+			//we need to get rid of the logic that sets the  currentlyPlayingSongNumber and currentSongFromAlbum to null. 
+			//We should replace it with a conditional statement that checks if the currentSoundFile is paused:
+			if (currentSoundFile.isPaused()) {
+				//revert the icon in the song row and playerbar to pause button
+				$(this).html(pauseButtonTemplate);
+				$('.main-controls .play-pause').html(playerBarPauseButton);//revert html of element to playerbarPLAYbutton when song is paused
+				//start plaging the song again
+				currentSoundFile.play();
+			} else {
+				//and set the content of the song number cell and player bars pause button back to play button
+				$(this).html(playButtonTemplate);
+				$('.main-controls .play-pause').html(playerBarPlayButton);//revert html of element to playerbarPLAYbutton when song is paused
+				//we need to pause it
+				currentSoundFile.pause();
+			}
 		}
 	};
-
 
 //Attempt to write the onHover and offHover functions. hover()
 //Note that we no longer need to use the getSongItem() helper because we can use jQuery's find() method to 
@@ -144,24 +176,23 @@ var nextSong = function() {
 
 	var currentSongIndex = trackIndex(currentAlbum, currentSongFromAlbum);
 
-	currentSongIndex++; // Incrementing the song -- why here ???
+	currentSongIndex++; 
 
 	if (currentSongIndex >= currentAlbum.songs.length) {
 		currentSongIndex = 0;
 	}
 
 	//Set new current song
-	currentlyPlayingSongNumber = currentSongIndex + 1;
-	currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
+	setSong(currentSongIndex + 1);
+	// currentlyPlayingSongNumber = currentSongIndex + 1;
+	// currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
 
+	//Play songs when skipping
+	currentSoundFile.play();
 	//Update player bar info -- why dont we just call the updatePlayerBar function?
-	$('.currently-playing .song-name').html(currentSongFromAlbum.title);
-	$('.currently-playing .artist-name').html(currentAlbum.artist);
-	$('.currently-playing .artist-song-mobile').html(currentSongFromAlbum.title + ' - ' + currentAlbum.artist);
-	$('.main-controls .play-pause').html(playerBarPauseButton);
+	updatePlayerBarSong();
 
-
-	var lastSongNumber = getLastSongNumber(currentSongIndex); // ???
+	var lastSongNumber = getLastSongNumber(currentSongIndex);
 	var $nextSongNumberCell = getSongNumberCell(currentlyPlayingSongNumber);
 	var $lastSongNumberCell = getSongNumberCell(lastSongNumber);
 
@@ -183,15 +214,16 @@ var previousSong = function() {
 	}
 
 	//Set a new current song
-	currentlyPlayingSongNumber = currentSongIndex + 1;
-	currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
+	setSong(currentSongIndex + 1);
+	// currentlyPlayingSongNumber = currentSongIndex + 1;
+	// currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
+
+	//play songs when skipping
+	currentSoundFile.play();
 
 	//Update player bar info -- why dont we just call the updatePlayerBar function?
-	$('.currently-playing .song-name').html(currentSongFromAlbum.title);
-	$('.currently-playing .artist-name').html(currentAlbum.artist);
-	$('.currently-playing .artist-song-mobile').html(currentSongFromAlbum.title + ' - ' + currentAlbum.artist);
-	$('.main-controls .play-pause').html(playerBarPauseButton);
-
+	updatePlayerBarSong();
+	
 	var lastSongNumber = getLastSongNumber(currentSongIndex); // ???
 	var $previousSongNumberCell = getSongNumberCell(currentlyPlayingSongNumber);
 	var $lastSongNumberCell = getSongNumberCell(lastSongNumber);
