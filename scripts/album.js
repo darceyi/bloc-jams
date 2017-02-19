@@ -231,9 +231,35 @@ var previousSong = function() {
 	$previousSongNumberCell.html(pauseButtonTemplate);
 	$lastSongNumberCell.html(lastSongNumber);
 };
+//CP20 ASSIGNMENT
+//	create a var to hold $('.main-controls .play-pause')
+var $playerBarControl = $('.main-controls .play-pause');
 
+var togglePlayFromPlayerBar = function() {
+
+	var currentlyPlayingSongNumberCell = getSongNumberCell(currentlyPlayingSongNumber);
+	//If a song is paused and the play button is clicked in the player bar
+	if (currentSoundFile.isPaused()) {
+		//change the song number cell from a play button to a pause button
+		currentlyPlayingSongNumberCell.html(pauseButtonTemplate);
+		//change the html of player bar's play button to pause
+		$playerBarControl.html(playerBarPauseButton);
+		//play the song
+		currentSoundFile.play();
+	} else { //If the song is playing (so a current sound file exist), and the pause button is clicked
+		//change the song number number cell from a pause to a play button
+		currentlyPlayingSongNumberCell.html(playButtonTemplate);
+		//change html if player bars pause button to play
+		$playerBarControl.html(playerBarPlayButton);
+		currentSoundFile.pause();
+	}
+};
+
+	
 $(document).ready(function() {
 		setCurrentAlbum(albumPicasso);
 		$previousButton.click(previousSong);
 		$nextButton.click(nextSong);
+		//add a click() event to it in the $(document).ready() block with togglePlayFromPlayerBar() as an event handler.
+		$playerBarControl.click(togglePlayFromPlayerBar);
 });
