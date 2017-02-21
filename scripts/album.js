@@ -47,7 +47,23 @@ var setVolume = function(volume) {
 	if (currentSoundFile) {
 		currentSoundFile.setVolume(volume);
 	}
-	console.log("setVolume");
+};
+
+var filterTimeCode = function(timeInSeconds) {
+	var totalSeconds = parseFloat(timeInSeconds).toFixed();
+	var minutes = Math.floor(totalSeconds / 60);
+	var seconds = totalSeconds - minutes * 60;
+	return minutes + ":" + seconds;
+};
+// Write a function called setCurrentTimeInPlayerBar() that takes one argument, currentTime, 
+// that sets the text of the element with the .current-time class to the current time in the song.
+// Add the method to updateSeekBarWhileSongPlays() so the current time updates with song playback.
+var setCurrentTimeInPlayerBar = function(currentTime) {
+		$('.current-time').html(filterTimeCode(currentTime));
+};
+
+var setTotalTimeInPlayerBar = function(totalTime) {
+	$('.total-time').html(filterTimeCode(totalTime));
 };
 
 var getSongNumberCell = function(number) {
@@ -55,6 +71,7 @@ var getSongNumberCell = function(number) {
 };
 
 var createSongRow = function(songNumber, songName, songLength) {
+	songLength = filterTimeCode(songLength);
 	var template =
 		'<tr class = "album-view-song-item">'
 	+	'	<td class="song-item-number" data-song-number="' + songNumber + '">' + songNumber + '</td>'
@@ -108,8 +125,6 @@ var createSongRow = function(songNumber, songName, songLength) {
 				currentSoundFile.pause();
 			}
 		}
-
-
 	};
 
 //Attempt to write the onHover and offHover functions. hover()
@@ -173,7 +188,6 @@ var setCurrentAlbum = function(album) {
 
 //The interface for the seek bars works, but it doesn't affect the song position or volume.
 var updateSeekBarWhileSongPlays = function() {
-
     if (currentSoundFile) {
         // #10
         currentSoundFile.bind('timeupdate', function(event) {
@@ -181,7 +195,8 @@ var updateSeekBarWhileSongPlays = function() {
             var seekBarFillRatio = this.getTime() / this.getDuration();
             var $seekBar = $('.seek-control .seek-bar');
             updateSeekPercentage($seekBar, seekBarFillRatio);
-     		// console.log(updateSeekPercentage($seekBar, seekBarFillRatio));
+			setCurrentTimeInPlayerBar(currentSoundFile.getTime());   
+			setTotalTimeInPlayerBar(currentSoundFile.getDuration());
         });
     }
 };
@@ -229,10 +244,10 @@ var setupSeekBars = function() {
 		// if (this.parentElement.className === 'seek-control') { 
 		if ($(this).parent().attr('class') === 'seek-control') {
 			seek(seekBarFillRatio * currentSoundFile.getDuration());
-			console.log("seek conditional for playback seekbar");
+			// console.log("seek conditional for playback seekbar");
 		} else {
 			setVolume(seekBarFillRatio * 100);
-			console.log("setVolume conditional");
+			// console.log("setVolume conditional");
 		}
 
 		updateSeekPercentage($(this), seekBarFillRatio);
