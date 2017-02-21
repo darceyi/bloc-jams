@@ -41,13 +41,13 @@ var seek = function(time) {
     if (currentSoundFile) {
         currentSoundFile.setTime(time);
     }
-    console.log("seek function");
 };
 
 var setVolume = function(volume) {
 	if (currentSoundFile) {
 		currentSoundFile.setVolume(volume);
 	}
+	console.log("setVolume");
 };
 
 var getSongNumberCell = function(number) {
@@ -82,6 +82,10 @@ var createSongRow = function(songNumber, songName, songLength) {
 			currentSoundFile.play();
 			updateSeekBarWhileSongPlays();
 			updatePlayerBarSong(); //when a new song is plaued to display pause in player-bar
+	        var $volumeFill = $('.volume .fill').css('width', currentVolume + '%');
+	        // var $volumeThumb = $('.volume .thumb').css('left', currentVolume + '%');
+	        var $volumeThumb = $('.volume .thumb').css({left: currentVolume + '%'});
+
 			// should show the song name and artist name
 			// $('.song-name').html("working");
 			// $('.artist-name').html("working");
@@ -104,6 +108,8 @@ var createSongRow = function(songNumber, songName, songLength) {
 				currentSoundFile.pause();
 			}
 		}
+
+
 	};
 
 //Attempt to write the onHover and offHover functions. hover()
@@ -216,8 +222,22 @@ var setupSeekBars = function() {
 		var offsetXPercent = event.pageX - $(this).offset().left;
 		var barWidth = $(this).width();
 		var seekBarFillRatio = offsetXPercent / barWidth;
+		//Checks the class of the seek bar's parent to determine whether the current seek bar is changing the volume 
+		//or seeking to a song position
+		//If it's the playback seek bar, seek to the position of the song determined by the seekBarFillRatio
+
+		// if (this.parentElement.className === 'seek-control') { 
+		if ($(this).parent().attr('class') === 'seek-control') {
+			seek(seekBarFillRatio * currentSoundFile.getDuration());
+			console.log("seek conditional for playback seekbar");
+		} else {
+			setVolume(seekBarFillRatio * 100);
+			console.log("setVolume conditional");
+		}
+
 		updateSeekPercentage($(this), seekBarFillRatio);
-		console.log("seekBars.click() to update");
+		// console.log("seekBars.click() to update");
+		console.log(seekBarFillRatio, "seekbarfillratio");
 	});
 	//At #7, we find elements with a class of .thumb inside our $seekBars and add an event listener for the mousedown event. 
 	//A click event fires when a mouse is pressed and released quickly, but the mousedown event will fire as soon as the mouse 
@@ -237,6 +257,7 @@ var setupSeekBars = function() {
 		//reason we need to use bind() with namespacing. 
 		//We've attached the mousemove event to $(document) to make sure that we can drag the thumb after mousing down, 
 		//even when the mouse leaves the seek bar. This allows for a smoother experience for seeking to a song position. 
+		
 		$(document).bind('mousemove.thumb', function(event){
             var offsetX = event.pageX - $seekBar.offset().left;
             var barWidth = $seekBar.width();
