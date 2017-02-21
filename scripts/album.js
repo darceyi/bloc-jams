@@ -34,12 +34,14 @@ var setSong = function(songNumberAttr) {
 	setVolume(currentVolume);
 };
 
-//We need to create a method that can change the current song's playback location.
+//We need to create a method that can change the current song's playback location -- click a new location to seek to correspoding
+//position in the song//
 //seek() uses the Buzz setTime() method to change the position in a song to a specified time.
 var seek = function(time) {
     if (currentSoundFile) {
         currentSoundFile.setTime(time);
     }
+    console.log("seek function");
 };
 
 var setVolume = function(volume) {
@@ -166,22 +168,23 @@ var setCurrentAlbum = function(album) {
 //The interface for the seek bars works, but it doesn't affect the song position or volume.
 var updateSeekBarWhileSongPlays = function() {
 
-     if (currentSoundFile) {
-         // #10
-         currentSoundFile.bind('timeupdate', function(event) {
-             // #11
-             var seekBarFillRatio = this.getTime() / this.getDuration();
-             var $seekBar = $('.seek-control .seek-bar');
- 
-             updateSeekPercentage($seekBar, seekBarFillRatio);
-         });
-     }
- };
+    if (currentSoundFile) {
+        // #10
+        currentSoundFile.bind('timeupdate', function(event) {
+            // #11
+            var seekBarFillRatio = this.getTime() / this.getDuration();
+            var $seekBar = $('.seek-control .seek-bar');
+            updateSeekPercentage($seekBar, seekBarFillRatio);
+     		// console.log(updateSeekPercentage($seekBar, seekBarFillRatio));
+        });
+    }
+};
 
 //The function must take two arguments, one for the seek bar to alter (either the volume or audio playback controls) 
 //and one for the ratio that will determine the  width and left values of the .fill and .thumb classes, respectively.
 //The ratio must be converted to a percentage so we can set the CSS property values as percents.
 //The percentage must be passed into jQuery functions that set the width and  left CSS properties.
+//my note this function included in setupSeekBars as it has to respond to click events
 var updateSeekPercentage = function($seekBar, seekBarFillRatio) {
 	//We start by multiplying the ratio by 100 to determine a percentage. 
 	var offsetXPercent = seekBarFillRatio * 100;
@@ -195,8 +198,11 @@ var updateSeekPercentage = function($seekBar, seekBarFillRatio) {
 	//the value as a percent instead of a unitless number between 0 and 100
 	$seekBar.find('.fill').width(percentageString);
     $seekBar.find('.thumb').css({left: percentageString});
+    // console.log("updateSeek%%%");
 };
 
+//updateSeekPercentage() is useless until we have a method for determining the  seekBarFillRatio. 
+//Create a function called setupSeekBars()
 var setupSeekBars = function() {
 	//At #6, we are using jQuery to find all elements in the DOM with a class of "seek-bar" that are contained within 
 	//the element with a class of "player-bar". This will return a jQuery wrapped array containing both 
@@ -211,6 +217,7 @@ var setupSeekBars = function() {
 		var barWidth = $(this).width();
 		var seekBarFillRatio = offsetXPercent / barWidth;
 		updateSeekPercentage($(this), seekBarFillRatio);
+		console.log("seekBars.click() to update");
 	});
 	//At #7, we find elements with a class of .thumb inside our $seekBars and add an event listener for the mousedown event. 
 	//A click event fires when a mouse is pressed and released quickly, but the mousedown event will fire as soon as the mouse 
@@ -218,7 +225,7 @@ var setupSeekBars = function() {
 	//jQuery allows us access to a shorthand method of attaching the mousedown event by calling mousedown on a jQuery collection.
 	$seekBars.find('.thumb').mousedown(function(event) {
 		//At #8, we are taking the context of the event and wrapping it in jQuery. 
-		//In this scenario, this will be equal to the .thumb node that was clicked. Because we are attaching an event to both 
+		//In this scenario, "this" will be equal to the .thumb node that was clicked. Because we are attaching an event to both 
 		//the song seek and volume control, this is an important way for us to determine which of these nodes dispatched the 
 		//event. We can then use the  parent method, which will select the immediate parent of the node. This will be whichever 
 		//seek bar this .thumb belongs to.
@@ -234,8 +241,9 @@ var setupSeekBars = function() {
             var offsetX = event.pageX - $seekBar.offset().left;
             var barWidth = $seekBar.width();
             var seekBarFillRatio = offsetX / barWidth;
- 
             updateSeekPercentage($seekBar, seekBarFillRatio);
+            
+            // console.log($seekBar, "$seekBar within mousemove.thumb");
         });
         //we bind the mouseup event with a .thumb namespace. The event handler uses the unbind() event method, which removes 
         //the previous event listeners that we just added. If we fail to unbind() them, the thumb and fill would continue to 
@@ -243,9 +251,10 @@ var setupSeekBars = function() {
 		$(document).bind('mouseup.thumb', function() {
             $(document).unbind('mousemove.thumb');
             $(document).unbind('mouseup.thumb');
+            // console.log("mouseup.thumb");
         });
+        // console.log($seekBar, "seekBar within mousedown");
 	});
-
 };
 
 var updatePlayerBarSong = function() {
