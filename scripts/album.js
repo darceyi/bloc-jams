@@ -10,7 +10,7 @@ var currentAlbum = null;
 var currentSongFromAlbum  = null;
 //store the sound object in this variable when we set a new current song
 var currentSoundFile = null;
-var currentVolume = 80;
+var currentVolume = 40;
 //vars to hold jquery selectors for the next and prev buttons
 var $previousButton = $('.main-controls .previous');
 var $nextButton =  $('.main-controls .next');
