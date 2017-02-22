@@ -32,6 +32,10 @@ var setSong = function(songNumberAttr) {
 	});
 
 	setVolume(currentVolume);
+	//show the correlation between the currentVolume and seekbarratio
+	$('.volume .seek-bar .fill').width(currentVolume);
+	$('.volume .seek-bar .thumb').css({left: currentVolume});
+	// console.log("setSong");
 };
 
 //We need to create a method that can change the current song's playback location -- click a new location to seek to correspoding
@@ -47,6 +51,7 @@ var setVolume = function(volume) {
 	if (currentSoundFile) {
 		currentSoundFile.setVolume(volume);
 	}
+	// console.log("setVolume");
 };
 
 var filterTimeCode = function(timeInSeconds) {
@@ -136,7 +141,6 @@ var createSongRow = function(songNumber, songName, songLength) {
 //Attempt to write the onHover and offHover functions. hover()
 //Note that we no longer need to use the getSongItem() helper because we can use jQuery's find() method to 
 //get the element with .song-item-number. Use this to refer to the row.
-
 	var onHover = function() {
 		var songNumberCell = $(this).find('.song-item-number');
 		var songNumberAttr = parseInt(songNumberCell.attr('data-song-number'));
@@ -258,7 +262,7 @@ var setupSeekBars = function() {
 
 		updateSeekPercentage($(this), seekBarFillRatio);
 		// console.log("seekBars.click() to update");
-		console.log(seekBarFillRatio, "seekbarfillratio");
+		// console.log(seekBarFillRatio, "seekbarfillratio");
 	});
 	//At #7, we find elements with a class of .thumb inside our $seekBars and add an event listener for the mousedown event. 
 	//A click event fires when a mouse is pressed and released quickly, but the mousedown event will fire as soon as the mouse 

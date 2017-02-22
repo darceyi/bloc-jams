@@ -157,14 +157,6 @@
 	vertical-align: middle;
 }
 
-.volume .seek-bar .fill {
-	width: 25%;
-}
-
-.volume .seek-bar .thumb {
-	left: 25%;
-}
-
 @media (max-width: 640px) {
 	.player-bar {
 		padding: 1rem;
