@@ -53,7 +53,12 @@ var filterTimeCode = function(timeInSeconds) {
 	var totalSeconds = parseFloat(timeInSeconds).toFixed();
 	var minutes = Math.floor(totalSeconds / 60);
 	var seconds = totalSeconds - minutes * 60;
-	return minutes + ":" + seconds;
+
+	if (seconds < 10) {
+		return minutes + ":" + '0' + seconds;
+	} else {
+		return minutes + ":" + seconds;
+	}
 };
 // Write a function called setCurrentTimeInPlayerBar() that takes one argument, currentTime, 
 // that sets the text of the element with the .current-time class to the current time in the song.
