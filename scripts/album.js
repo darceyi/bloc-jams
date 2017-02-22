@@ -99,9 +99,10 @@ var createSongRow = function(songNumber, songName, songLength) {
 			currentSoundFile.play();
 			updateSeekBarWhileSongPlays();
 			updatePlayerBarSong(); //when a new song is plaued to display pause in player-bar
-	        var $volumeFill = $('.volume .fill').css('width', currentVolume + '%');
-	        // var $volumeThumb = $('.volume .thumb').css('left', currentVolume + '%');
-	        var $volumeThumb = $('.volume .thumb').css({left: currentVolume + '%'});
+	        // var $volumeFill = $('.volume .fill').width(currentVolume + '%');
+	        // var $volumeThumb = $('.volume .thumb').css({left: currentVolume + '%'});
+	        // console.log($volumeFill, "volumeFill");
+	        // console.log($volumeThumb, "volumeThumb");
 
 			// should show the song name and artist name
 			// $('.song-name').html("working");
@@ -196,7 +197,7 @@ var updateSeekBarWhileSongPlays = function() {
             var $seekBar = $('.seek-control .seek-bar');
             updateSeekPercentage($seekBar, seekBarFillRatio);
 			setCurrentTimeInPlayerBar(currentSoundFile.getTime());   
-			setTotalTimeInPlayerBar(currentSoundFile.getDuration());
+			setTotalTimeInPlayerBar(currentSongFromAlbum.duration);
         });
     }
 };
